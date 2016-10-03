@@ -81,7 +81,7 @@ def round_robin():
 			print("El valor de tu Quantum no es valido.")
 
 	while True:
-		cargar_memoria(tiempo_procesador, memory_size)
+		cargar_memoria()
 		for proceso in process_in_memory_list:
 			for x in range(quantum):
 				if proceso.execution_size == 0:
@@ -108,10 +108,10 @@ def prioridad():
 	pass
 
 
-def cargar_memoria(tiempo_procesador, memory_size):
+def cargar_memoria():
 	while True:
 		if process_list:
-			current_process = process_list.pop()
+			global current_process = process_list.pop()
 		else:
 			print("No hay más procesos")
 			sys.exit(0)
@@ -120,16 +120,16 @@ def cargar_memoria(tiempo_procesador, memory_size):
 		if current_process.arrival <= tiempo_procesador:
 			if current_process.memory_size <= memory_size:
 				print("[" + str(current_process.name) + "]: Cargado en Memoria del CPU")
-				process_in_memory_list.append(current_process)
+				global process_in_memory_list.append(current_process)
 			else:
-				process_list.append(current_process)
+				global process_list.append(current_process)
 				break
 		else:
-			process_list.append(current_process)
+			global process_list.append(current_process)
 			break
 
 		if not process_in_memory_list:
-			tiempo_procesador = tiempo_procesador + 1
+			global tiempo_procesador = tiempo_procesador + 1
 
 	for proceso in process_in_memory_list:
 		print(proceso.name)
