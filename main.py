@@ -37,7 +37,7 @@ def create_process():
 				process_list.append(new_process)
 				break
 			except (RuntimeError, TypeError, NameError, IndexError, ValueError):
-				print("Oops! Ese proceso no es válido. Vuelve a intentarlo")
+				print("Oops! El proceso no es válido. Vuelve a intentarlo")
 
 		#for process in process_list:
 		#	print (process.arrival)
@@ -59,18 +59,16 @@ def select_plan():
 			print("\t (1) Prioridad Cooperativo")
 			print("\t (2) Round Robin")
 			selection = int(input())
-			if selection == 1:
-				prioridad()
-				break
-			elif selection == 2:
-				round_robin()
-				break
-			else:
-				print("El valor: " + str(selection) + " no es valido.")
-
 		except (RuntimeError, TypeError, NameError, IndexError, ValueError):
 			print("Oops! Ese dato no es válido. Vuelve a intentarlo")
-	cargar_memoria
+		if selection == 1:
+			prioridad()
+			break
+		elif selection == 2:
+			round_robin()
+			break
+		else:
+			print("El valor: " + str(selection) + " no es valido.")
 
 def round_robin():
 	quantum = 0
@@ -82,6 +80,29 @@ def round_robin():
 		except TypeError:
 			print("El valor de tu Quantum no es valido.")
 
+	while True:
+		cargar_memoria(tiempo_procesador, memory_size)
+		for proceso in process_in_memory_list:
+			for x in range(quantum):
+				if proceso.execution_size == 0:
+					memory_size = proceso.memory_size + memory_size
+					print("[" + proceso.name + "] Salió por E/S")
+
+					index = process_in_memory_list.index(proceso)
+
+					del process_in_memory_list[index]
+					break
+
+				elif (proceso.execution_size - quantum) <= 0:
+					print("[" + proceso.name + "] terminó de ejecutar")
+					proceso.execution_size = 0
+					break
+				else:
+					proceso.execution_size = proceso.execution_size - 1
+					print("[" + proceso.name + "] subió restan:" + str(proceso.execution_size))
+
+
+
 
 def prioridad():
 	pass
@@ -89,11 +110,11 @@ def prioridad():
 
 def cargar_memoria(tiempo_procesador, memory_size):
 	while True:
-		print("flag1")
 		if process_list:
 			current_process = process_list.pop()
 		else:
 			print("No hay más procesos")
+			sys.exit(0)
 			break
 
 		if current_process.arrival <= tiempo_procesador:
@@ -115,21 +136,12 @@ def cargar_memoria(tiempo_procesador, memory_size):
 
 
 def main():
-	# Variables Globales
-	tiempo_procesador = 0
-	memory_size = 2000
-	process_list = []
-	process_in_memory_list = []
-	memory_size = 2000
-
-
 
 	clear()
 	print ('Hola, Vamos a crear los primeros procesos.')
 	create_process()
 
 	clear()
-	cargar_memoria(tiempo_procesador,memory_size)
 	select_plan()
 
 
@@ -137,6 +149,10 @@ def main():
 
 if __name__ == '__main__':
 	clear = lambda: os.system('clear')
+	process_list = []
+	process_in_memory_list = []
+	tiempo_procesador = 0
+	memory_size = 2000
 
 	main()
 
