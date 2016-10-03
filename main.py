@@ -17,6 +17,7 @@ class Process(object):
 	arrival = random.randint(0,20)
 
 def create_process():
+	global process_list
 	x = 0
 	while True:
 		'''We create the process that we will work with.'''
@@ -71,6 +72,11 @@ def select_plan():
 			print("El valor: " + str(selection) + " no es valido.")
 
 def round_robin():
+	global process_in_memory_list
+	global process_list
+	global tiempo_procesador
+	global memory_size
+
 	quantum = 0
 	while True:
 		print("Ingresa el tamaño de tu Quantum.")
@@ -93,14 +99,17 @@ def round_robin():
 					del process_in_memory_list[index]
 					break
 
-				elif (proceso.execution_size - quantum) <= 0:
-					print("[" + proceso.name + "] terminó de ejecutar")
+				elif (proceso.execution_size - 1) <= 0:
+					print("[" + proceso.name + "] Terminó de Ejecutar")
 					proceso.execution_size = 0
 					break
 				else:
 					proceso.execution_size = proceso.execution_size - 1
-					print("[" + proceso.name + "] subió restan:" + str(proceso.execution_size))
-
+					print("[" + proceso.name + "] subió restan: " + str(proceso.execution_size))
+					tiempo_procesador = tiempo_procesador + 1
+		
+		if (not process_in_memory_list and not process_list):
+			sys.exit(0)
 
 
 
@@ -109,30 +118,36 @@ def prioridad():
 
 
 def cargar_memoria():
+	global process_in_memory_list
+	global process_list
+	global tiempo_procesador
+	global memory_size
+
 	while True:
+		print(tiempo_procesador)
 		if process_list:
-			global current_process = process_list.pop()
+			current_process = process_list.pop()
 		else:
-			print("No hay más procesos")
-			sys.exit(0)
+			#print("No hay más procesos")
 			break
 
 		if current_process.arrival <= tiempo_procesador:
+
 			if current_process.memory_size <= memory_size:
 				print("[" + str(current_process.name) + "]: Cargado en Memoria del CPU")
-				global process_in_memory_list.append(current_process)
+				process_in_memory_list.append(current_process)
 			else:
-				global process_list.append(current_process)
+				process_list.append(current_process)
 				break
 		else:
-			global process_list.append(current_process)
+			process_list.append(current_process)
 			break
 
 		if not process_in_memory_list:
-			global tiempo_procesador = tiempo_procesador + 1
+			tiempo_procesador = tiempo_procesador + 1
 
-	for proceso in process_in_memory_list:
-		print(proceso.name)
+	#for proceso in process_in_memory_list:
+	#	print(proceso.name)
 
 
 def main():
