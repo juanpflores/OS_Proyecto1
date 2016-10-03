@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# import modules used here 
 import sys
 import random
 import os
 
-
-# Create the Process object with all the details of a process.
 class Process(object):
-	id_number = 0
-	name = " "
-	memory_size = random.randint(1,1000)
-	execution_size = random.randint(1,200)
-	priority = random.randint(1,10)
-	arrival = random.randint(0,20)
+	id_n = 0
+	nombre = " "
+	tamano_memoria = random.randint(1,1000)
+	t_rafaga = random.randint(1,200)
+	prioridad = random.randint(1,10)
+	llegada = random.randint(0,20)
 
 def create_process():
-	global process_list
+	global lista_procesos
 
 	x = 0
 	while True:
@@ -28,29 +25,29 @@ def create_process():
 				print("nombre, tamano_memoria, tiempo_ejecucion, prioridad, llegada")
 				data_input = input()
 				data = data_input.split(',')
-				new_process = Process()
-				new_process.id_number = x
-				new_process.name = str(data[0])
-				new_process.memory_size = int(data[1])
-				new_process.execution_size = int(data[2])
-				new_process.priority = int(data[3])
-				new_process.arrival = int(data[4])
+				nuevo_proceso = Process()
+				nuevo_proceso.id_n = x
+				nuevo_proceso.nombre = str(data[0])
+				nuevo_proceso.tamano_memoria = int(data[1])
+				nuevo_proceso.t_rafaga = int(data[2])
+				nuevo_proceso.prioridad = int(data[3])
+				nuevo_proceso.llegada = int(data[4])
 
-				process_list.append(new_process)
+				lista_procesos.append(nuevo_proceso)
 				break
 			except (RuntimeError, TypeError, NameError, IndexError, ValueError):
 				print("Oops! El proceso no es válido. Vuelve a intentarlo")
 
-		#for process in process_list:
-		#	print (process.arrival)
+		#for process in lista_procesos:
+		#	print (process.llegada)
 
 		x = x + 1 	#Contador del ID aumenta en 1
 		print("Quieres crear otro proceso (S/N)")
 		salida = input()
 		if salida == "N" or salida == "n":
-			process_list.sort(key=lambda x: x.arrival, reverse=True)
-			#for process in process_list:
-			#	print(process.arrival)
+			lista_procesos.sort(key=lambda x: x.llegada, reverse=True)
+			#for process in lista_procesos:
+			#	print(process.llegada)
 			break
 		clear()
 
@@ -60,23 +57,23 @@ def select_plan():
 			print("Los procesos estan listos. \n¿Qué planificador quieres usar?")
 			print("\t (1) Prioridad Cooperativo")
 			print("\t (2) Round Robin")
-			selection = int(input())
+			opcion = int(input())
 		except (RuntimeError, TypeError, NameError, IndexError, ValueError):
 			print("Oops! Ese dato no es válido. Vuelve a intentarlo")
-		if selection == 1:
+		if opcion == 1:
 			prioridad()
 			break
-		elif selection == 2:
+		elif opcion == 2:
 			round_robin()
 			break
 		else:
-			print("El valor: " + str(selection) + " no es valido.")
+			print("El valor: " + str(opcion) + " no es valido.")
 
 def round_robin():
-	global process_in_memory_list
-	global process_list
+	global procesos_cpu
+	global lista_procesos
 	global tiempo_procesador
-	global memory_size
+	global tamano_memoria
 
 	quantum = 0
 	while True:
@@ -89,85 +86,84 @@ def round_robin():
 
 	while True:
 		cargar_memoria()
-		for proceso in process_in_memory_list:
+		for proceso in procesos_cpu:
 			for x in range(quantum):
-				if proceso.execution_size == 0:
-					memory_size = proceso.memory_size + memory_size
-					print("[" + proceso.name + "] Salió por E/S")
-					index = process_in_memory_list.index(proceso)
-					del process_in_memory_list[index]
+				if proceso.t_rafaga == 0:
+					tamano_memoria = proceso.tamano_memoria + tamano_memoria
+					print("[" + proceso.nombre + "] Salió por E/S")
+					index = procesos_cpu.index(proceso)
+					del procesos_cpu[index]
 					break
 
-				elif (proceso.execution_size - 1) <= 0:
-					print("[" + proceso.name + "] Terminó de Ejecutar")
-					proceso.execution_size = 0
+				elif (proceso.t_rafaga - 1) <= 0:
+					print("[" + proceso.nombre + "] Terminó de Ejecutar")
+					proceso.t_rafaga = 0
 					break
 				else:
-					proceso.execution_size = proceso.execution_size - 1
-					print("[" + proceso.name + "] subió restan: " + str(proceso.execution_size))
+					proceso.t_rafaga = proceso.t_rafaga - 1
+					print("[" + proceso.nombre + "] subió restan: " + str(proceso.t_rafaga))
 					tiempo_procesador = tiempo_procesador + 1
 		
-		if (not process_in_memory_list and not process_list):
+		if (not procesos_cpu and not lista_procesos):
 			sys.exit(0)
 
 
 
 def prioridad():
-	global process_in_memory_list
-	global process_list
+	global procesos_cpu
+	global lista_procesos
 	global tiempo_procesador
-	global memory_size
+	global tamano_memoria
 
 	while True:
 		cargar_memoria()
 
-		if process_in_memory_list:
-			process_in_memory_list.sort(key=lambda x: x.priority)
-			proceso_actual = process_in_memory_list.pop()
+		if procesos_cpu:
+			procesos_cpu.sort(key=lambda x: x.prioridad)
+			proceso_actual = procesos_cpu.pop()
 
-			for x in range(proceso_actual.execution_size):
+			for x in range(proceso_actual.t_rafaga):
 				tiempo_procesador = tiempo_procesador + 1
-				proceso_actual.execution_size = proceso_actual.execution_size - 1
-				print("[" + proceso_actual.name + "] subió restan: " + str(proceso_actual.execution_size))
-			print("[" + proceso_actual.name + "] Terminó de Ejecutar")
-			memory_size = proceso_actual.memory_size + memory_size
-			print("[" + proceso_actual.name + "] Salió por E/S")
+				proceso_actual.t_rafaga = proceso_actual.t_rafaga - 1
+				print("[" + proceso_actual.nombre + "] subió restan: " + str(proceso_actual.t_rafaga))
+			print("[" + proceso_actual.nombre + "] Terminó de Ejecutar")
+			tamano_memoria = proceso_actual.tamano_memoria + tamano_memoria
+			print("[" + proceso_actual.nombre + "] Salió por E/S")
 
-		if (not process_in_memory_list and not process_list):
+		if (not procesos_cpu and not lista_procesos):
 			sys.exit(0)
 
 
 def cargar_memoria():
-	global process_in_memory_list
-	global process_list
+	global procesos_cpu
+	global lista_procesos
 	global tiempo_procesador
-	global memory_size
+	global tamano_memoria
 
 	while True:
-		print(tiempo_procesador)
-		if process_list:
-			current_process = process_list.pop()
+		if lista_procesos:
+			current_process = lista_procesos.pop()
 		else:
 			#print("No hay más procesos")
 			break
 
-		if current_process.arrival <= tiempo_procesador:
+		if current_process.llegada <= tiempo_procesador:
 
-			if current_process.memory_size <= memory_size:
-				print("[" + str(current_process.name) + "]: Cargado en Memoria del CPU")
-				process_in_memory_list.append(current_process)
+			if current_process.tamano_memoria <= tamano_memoria:
+				print("[" + str(current_process.nombre) + "]: Cargado en Memoria del CPU")
+				procesos_cpu.append(current_process)
 			else:
-				process_list.append(current_process)
+				lista_procesos.append(current_process)
 				break
 		else:
-			process_list.append(current_process)
+			lista_procesos.append(current_process)
 			break
 
-		if not process_in_memory_list:
+		if not procesos_cpu and lista_procesos:
 			tiempo_procesador = tiempo_procesador + 1
 
-	#for proceso in process_in_memory_list:
-	#	print(proceso.name)
+	#for proceso in procesos_cpu:
+	#	print(proceso.nombre)
 
 
 def main():
@@ -184,10 +180,10 @@ def main():
 
 if __name__ == '__main__':
 	clear = lambda: os.system('clear')
-	process_list = []
-	process_in_memory_list = []
+	lista_procesos = []
+	procesos_cpu = []
 	tiempo_procesador = 0
-	memory_size = 2000
+	tamano_memoria = 2000
 
 	main()
 
