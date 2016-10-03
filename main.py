@@ -18,6 +18,7 @@ class Process(object):
 
 def create_process():
 	global process_list
+
 	x = 0
 	while True:
 		'''We create the process that we will work with.'''
@@ -93,9 +94,7 @@ def round_robin():
 				if proceso.execution_size == 0:
 					memory_size = proceso.memory_size + memory_size
 					print("[" + proceso.name + "] Salió por E/S")
-
 					index = process_in_memory_list.index(proceso)
-
 					del process_in_memory_list[index]
 					break
 
@@ -114,7 +113,28 @@ def round_robin():
 
 
 def prioridad():
-	pass
+	global process_in_memory_list
+	global process_list
+	global tiempo_procesador
+	global memory_size
+
+	while True:
+		cargar_memoria()
+
+		if process_in_memory_list:
+			process_in_memory_list.sort(key=lambda x: x.priority)
+			proceso_actual = process_in_memory_list.pop()
+
+			for x in range(proceso_actual.execution_size):
+				tiempo_procesador = tiempo_procesador + 1
+				proceso_actual.execution_size = proceso_actual.execution_size - 1
+				print("[" + proceso_actual.name + "] subió restan: " + str(proceso_actual.execution_size))
+			print("[" + proceso_actual.name + "] Terminó de Ejecutar")
+			memory_size = proceso_actual.memory_size + memory_size
+			print("[" + proceso_actual.name + "] Salió por E/S")
+
+		if (not process_in_memory_list and not process_list):
+			sys.exit(0)
 
 
 def cargar_memoria():
