@@ -152,6 +152,7 @@ def cargar_memoria():
 			if current_process.tamano_memoria <= tamano_memoria:
 				print("[" + str(current_process.nombre) + "]: Cargado en Memoria del CPU")
 				procesos_cpu.append(current_process)
+				tamano_memoria = tamano_memoria - current_process.tamano_memoria
 			else:
 				lista_procesos.append(current_process)
 				break
@@ -162,10 +163,6 @@ def cargar_memoria():
 		if not procesos_cpu and lista_procesos:
 			tiempo_procesador = tiempo_procesador + 1
 
-	#for proceso in procesos_cpu:
-	#	print(proceso.nombre)
-
-
 def main():
 
 	clear()
@@ -174,9 +171,6 @@ def main():
 
 	clear()
 	select_plan()
-
-
-
 
 if __name__ == '__main__':
 	clear = lambda: os.system('clear')
