@@ -171,6 +171,7 @@ def prioridad():
 		if procesos_cpu:
 			procesos_cpu.sort(key=lambda x: x.prioridad)
 			proceso = procesos_cpu.pop()
+			print("[" + proceso.nombre + "] subió restan: " + str(proceso.t_rafaga))
 
 			for x in range(proceso.t_rafaga):
 				tiempo_procesador = tiempo_procesador + 1
@@ -180,7 +181,6 @@ def prioridad():
 					proceso.t_subida = tiempo_procesador
 					proceso.ex = 1
 
-				print("[" + proceso.nombre + "] subió restan: " + str(proceso.t_rafaga))
 			print("[" + proceso.nombre + "] Terminó de Ejecutar")
 			tamano_memoria = proceso.tamano_memoria + tamano_memoria
 
