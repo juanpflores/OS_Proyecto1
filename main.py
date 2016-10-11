@@ -52,25 +52,25 @@ def cargarMemoria(datos):
 	global lista_procesos
 	global procesos_en_cpu
 	tiempo_procesador = datos['tiempo_procesador']
+	i = 0
 
-	while True:
-		for proceso in lista_procesos:
-			if proceso.llegada <= tiempo_procesador:
-				if (datos['tamano_memoria'] - proceso.tamano_memoria) > 0 :
-					indice = lista_procesos.index(proceso)
-					proceso_cargar = lista_procesos.pop(indice)
-					procesos_en_cpu.append(proceso_cargar)
-					print(str(proceso_cargar.nombre) + ": Cargado en CPU")
-					imprimirLista(lista_procesos, procesos_en_cpu, tiempo_procesador)
-					break
+	while i < len(lista_procesos):
+		proceso = lista_procesos[i]
+		if proceso.llegada <= tiempo_procesador:
+			if (datos['tamano_memoria'] - proceso.tamano_memoria) > 0 :
+				proceso_cargar = lista_procesos.pop(i)
+				procesos_en_cpu.append(proceso_cargar)
+				print(str(proceso_cargar.nombre) + ": Cargado en CPU")
+				imprimirLista(lista_procesos, procesos_en_cpu, tiempo_procesador)
 
-				else: print("[TP: " + str(tiempo_procesador) + "]" + 
-						str(proceso.nombre) + ": No hay memoria suficiente.")
+			else: print("[TP: " + str(tiempo_procesador) + "]" + 
+					str(proceso.nombre) + ": No hay memoria suficiente.")
+		else: break
 
-		if lista_procesos and not procesos_en_cpu:
-			print("[TP: " + str(tiempo_procesador) +"] No se encontraron procesos")
-			tiempo_procesador = tiempo_procesador + 1
-		if not lista_procesos: return tiempo_procesador
+	if lista_procesos and not procesos_en_cpu:
+		print("[TP: " + str(tiempo_procesador) +"] No se encontraron procesos")
+		tiempo_procesador = tiempo_procesador + 1
+	if not lista_procesos: return tiempo_procesador
 	return tiempo_procesador
 
 def planificadorRR(datos):
