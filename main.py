@@ -4,16 +4,18 @@
 import sys, os
 
 class Proceso(object):
+	'''Nuestro Objeto de tipo Proeso se inicia vacio'''
 	pass
 
 def iniciarMenu(datos_generales):
+	'''Menu Principal del programa'''
 	global lista_procesos
 
 	clear()
 	identificador = 0
 	while True:
 		identificador += 1
-		'''Creamos un nuevo proceso y le asignamos valores'''
+		'''Crea un nuevo proceso y le asigna valores ingresados por el usuario'''
 		try:
 			print("Agrega los datos con el siguiente formato")
 			print("nombre, tiempo_ejecucion, llegada, prioridad, tamano_memoria")
@@ -45,10 +47,10 @@ def parseador(datos_entrada, identificador):
 	nuevo_proceso.llegada = int(datos[2])
 	nuevo_proceso.proceso_limpio = 1
 
-
 	return nuevo_proceso
 
 def cargarMemoria(datos):
+	'''Carga de la lista de procesos al CPU'''
 	global lista_procesos
 	global procesos_en_cpu
 	tiempo_procesador = datos['tiempo_procesador']
@@ -74,6 +76,7 @@ def cargarMemoria(datos):
 	return tiempo_procesador
 
 def planificadorRR(datos):
+	'''Logica del planificador Round Robin'''
 	global lista_procesos
 	global procesos_en_cpu
 	QUANTUM = int(input("Ingresa el valor del Quantum: "))
@@ -88,6 +91,7 @@ def planificadorRR(datos):
 		tiempo = datos['tiempo_procesador']
 
 		for proceso in procesos_en_cpu:
+			print("Subió proceso:" + str(proceso.nombre))
 			if proceso.proceso_limpio == 1:
 				proceso.proceso_limpio = 0
 				proceso.primer_ejecucion = tiempo
@@ -110,12 +114,14 @@ def planificadorRR(datos):
 			datos['tiempo_procesador'] = tiempo
 
 def finalizarTiempoPromedio(datos):
+	'''Imprime los datos de los tiempos'''
 	datos['tiempo_ejecucion'] = datos.get('tiempo_ejecucion') / datos.get('num_procesos')
 	datos['tiempo_espera'] = datos.get('tiempo_espera') / datos.get('num_procesos')
 	datos['tiempo_respuesta'] = datos.get('tiempo_respuesta') / datos.get('num_procesos')
 	return datos
 
 def agregarTiempoPromedio(datos, proceso, tiempo):
+	'''Suma los timepos promedios de los procesos'''
 	datos['tiempo_ejecucion'] = datos.get('tiempo_ejecucion') + tiempo - proceso.llegada
 	datos['tiempo_espera'] = datos.get('tiempo_espera') + proceso.ultima_ejecucion - proceso.ya_ejecutado - proceso.llegada
 	print(str(proceso.primer_ejecucion) + "-" + str(proceso.llegada))
@@ -128,6 +134,7 @@ def imprimirDetallesLista(lista):
 			", " + str(proceso.llegada) + "]")
 
 def imprimirLista(cola_procesos, cpu_procesos, tiempo):
+	'''imprime la todas las listas de procesos'''
 	print("[TP: " + str(tiempo) + "]")
 	print("LP:", end="", flush=True)
 	imprimirProceso(cola_procesos)
